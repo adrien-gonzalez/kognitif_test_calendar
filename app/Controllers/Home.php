@@ -16,12 +16,12 @@ class Home extends BaseController
         ];
 
         $call = $actions[$method];
-        
+ 
         $response = $this->$call();
         return $response;
 
     }
-
+	
 	public function getCalendar()
 	{
 		return view('calendar');
@@ -29,7 +29,28 @@ class Home extends BaseController
 
 	public function postCalendar()
 	{
+		$param = $this->request->getRawInput();
 		$calendar = new CalendarModel();
-		return $calendar->test();
+		return $calendar->postCalendar($param);
+	}
+
+	public function putCalendar()
+	{
+		$param = $this->request->getRawInput();
+		$calendar = new CalendarModel();
+		return $calendar->putCalendar($param);
+	}
+
+	public function deleteCalendar()
+	{
+		$param = $this->request->getRawInput();
+		$calendar = new CalendarModel();
+		return $calendar->deleteCalendar($param);
+	}
+
+	public function load()
+	{
+		$calendar = new CalendarModel();
+		echo json_encode($calendar->select());
 	}
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
 	<meta charset="UTF-8">
 	<title>Calendar</title>
@@ -16,13 +16,13 @@
     <script>
         $(document).ready(function(){
         var calendar = $('#calendar').fullCalendar({
-            editable:true,
+            editable: true,
             header:{
                 left:'prev,next today',
                 center:'title',
                 right:'month,agendaWeek,agendaDay'
             },
-            events:"<?php echo base_url(); ?>fullcalendar/load",
+            events:"<?php echo base_url(); ?>/load",
             selectable:true,
             selectHelper:true,
             select:function(start, end, allDay)
@@ -33,7 +33,7 @@
                     var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
                     var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
                     $.ajax({
-                        url:"<?php echo base_url(); ?>fullcalendar/insert",
+                        url:"<?php echo base_url(); ?>",
                         type:"POST",
                         data:{title:title, start:start, end:end},
                         success:function()
@@ -42,11 +42,12 @@
                             alert("Added Successfully");
                         }
                     })
-                }
+                } 
             },
             editable:true,
             eventResize:function(event)
             {
+                alert(event.title + " end is now " + event.end.toISOString());
                 var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
                 var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
 
@@ -55,8 +56,8 @@
                 var id = event.id;
 
                 $.ajax({
-                    url:"<?php echo base_url(); ?>fullcalendar/update",
-                    type:"POST",
+                    url:"<?php echo base_url(); ?>",
+                    type:"PUT",
                     data:{title:title, start:start, end:end, id:id},
                     success:function()
                     {
@@ -67,6 +68,7 @@
             },
             eventDrop:function(event)
             {
+                alert(event.title + " end is now " + event.end.toISOString()+"test2");
                 var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
                 //alert(start);
                 var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
@@ -74,8 +76,8 @@
                 var title = event.title;
                 var id = event.id;
                 $.ajax({
-                    url:"<?php echo base_url(); ?>fullcalendar/update",
-                    type:"POST",
+                    url:"<?php echo base_url(); ?>",
+                    type:"PUT",
                     data:{title:title, start:start, end:end, id:id},
                     success:function()
                     {
@@ -90,8 +92,8 @@
                 {
                     var id = event.id;
                     $.ajax({
-                        url:"<?php echo base_url(); ?>fullcalendar/delete",
-                        type:"POST",
+                        url:"<?php echo base_url(); ?>",
+                        type:"DELETE",
                         data:{id:id},
                         success:function()
                         {
@@ -102,8 +104,12 @@
                 }
             }
         });
+        // console.log(data);
+        
+        // calendar.fullCalendar('addEventSource',  [ { title  : 'event2', start  : '2021-08-04 00:00:00', end: '2021-08-05 00:00:00' } ],);
     });
     </script>
+  
     
 
 	<!-- STYLES -->
