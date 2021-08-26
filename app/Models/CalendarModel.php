@@ -5,6 +5,8 @@ namespace App\Models;
 use DateTime;
 use Exception;
 use CodeIgniter\Model;
+use CodeIgniter\I18n\Time;
+
 
 class CalendarModel extends Model
 {
@@ -20,7 +22,7 @@ class CalendarModel extends Model
     }
 
     public function postCalendar($param)
-    {
+    {   
         $builder = $this->db->table('event');
         $builder->insert([
             'title' => $param['title'],

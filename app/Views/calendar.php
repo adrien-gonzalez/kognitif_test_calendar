@@ -7,106 +7,103 @@
 	<link rel="shortcut icon" type="image/png" href="/favicon.ico"/>
 
     <!-- CALENDAR -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.css" />   
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/locales-all.min.js"></script>
+
+
+
     <script>
         $(document).ready(function(){
-        var calendar = $('#calendar').fullCalendar({
+		var calendar = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendar, {
+            googleCalendarApiKey: 'AIzaSyD2JqmNcrJyx6Ll_xQHsxCVHQCe0s1QHZs',
             editable: true,
-            header:{
-                left:'prev,next today',
-                center:'title',
-                right:'month,agendaWeek,agendaDay'
-            },
-            events:"<?php echo base_url(); ?>/load",
+			headerToolbar: {
+                left: 'prev,next today',
+				center: 'title',
+				right: 'dayGridMonth,timeGridWeek,listYear'
+			},
+            eventSources: [
+                "<?php echo base_url(); ?>/load",
+                {
+                    googleCalendarId: '1gd18sauhrs58dcuq9718uisn0@group.calendar.google.com'
+                }
+            ],
             selectable:true,
-            selectHelper:true,
-            select:function(start, end, allDay)
+            select:function(arg)
             {
                 var title = prompt("Enter Event Title");
                 if(title)
                 {
-                    var start = $.fullCalendar.formatDate(start, "Y-MM-DD HH:mm:ss");
-                    var end = $.fullCalendar.formatDate(end, "Y-MM-DD HH:mm:ss");
+					calendar.addEvent({
+						title: title,
+						start: arg.start,
+						end: arg.end,
+						// allDay: arg.allDay
+					})
                     $.ajax({
                         url:"<?php echo base_url(); ?>",
                         type:"POST",
-                        data:{title:title, start:start, end:end},
+                        data:{title:title, start:arg.startStr, end:arg.endStr},
                         success:function()
                         {
-                            calendar.fullCalendar('refetchEvents');
                             alert("Added Successfully");
                         }
                     })
                 } 
+				calendar.unselect()
             },
             editable:true,
-            eventResize:function(event)
+            eventResize:function(arg)
             {
-                alert(event.title + " end is now " + event.end.toISOString());
-                var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-                var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-
-                var title = event.title;
-
-                var id = event.id;
-
                 $.ajax({
                     url:"<?php echo base_url(); ?>",
                     type:"PUT",
-                    data:{title:title, start:start, end:end, id:id},
+                    data:{title: arg.oldEvent.title, start:arg.event.startStr, end:arg.event.endStr, id: arg.oldEvent.id},
                     success:function()
                     {
-                        calendar.fullCalendar('refetchEvents');
                         alert("Event Update");
                     }
                 })
             },
-            eventDrop:function(event)
+            eventDrop:function(arg)
             {
-                alert(event.title + " end is now " + event.end.toISOString()+"test2");
-                var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD HH:mm:ss");
-                //alert(start);
-                var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD HH:mm:ss");
-                //alert(end);
-                var title = event.title;
-                var id = event.id;
                 $.ajax({
                     url:"<?php echo base_url(); ?>",
                     type:"PUT",
-                    data:{title:title, start:start, end:end, id:id},
+                    data:{title:arg.oldEvent.title, start:arg.event.startStr, end:arg.event.endStr, id:arg.oldEvent.id},
                     success:function()
                     {
-                        calendar.fullCalendar('refetchEvents');
                         alert("Event Updated");
                     }
                 })
             },
-            eventClick:function(event)
+            eventClick:function(arg)
             {
                 if(confirm("Are you sure you want to remove it?"))
                 {
-                    var id = event.id;
+                    var id = arg.event.id;
                     $.ajax({
                         url:"<?php echo base_url(); ?>",
                         type:"DELETE",
                         data:{id:id},
                         success:function()
                         {
-                            calendar.fullCalendar('refetchEvents');
+							arg.event.remove()
                             alert('Event Removed');
                         }
                     })
                 }
             }
         });
-        // console.log(data);
-        
-        // calendar.fullCalendar('addEventSource',  [ { title  : 'event2', start  : '2021-08-04 00:00:00', end: '2021-08-05 00:00:00' } ],);
+		calendar.render();
     });
     </script>
   
@@ -296,6 +293,10 @@
 				color: rgba(255, 255, 255, .8);
 			}
 		}
+		#calendar {
+			max-width: 1100px;
+			margin: 0 auto;
+		}
 	</style>
 </head>
 <body>
@@ -303,10 +304,11 @@
 <!-- HEADER: MENU + HEROE SECTION -->
 <header>
 	<div class="menu">
+		<h1>My Calendar</h1>
 	</div>
 </header>
 
-<div id='calendar'></div>
+<div class=" mt-3" id='calendar'></div>
 
 <!-- CONTENT -->
 
@@ -328,9 +330,9 @@
 <footer>
 	<div class="environment">
 
-		<p>Page rendered in {elapsed_time} seconds</p>
+		<!-- <p>Page rendered in {elapsed_time} seconds</p>
 
-		<p>Environment: <?= ENVIRONMENT ?></p>
+		<p>Environment: <?= ENVIRONMENT ?></p> -->
 
 	</div>
 
