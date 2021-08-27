@@ -14,7 +14,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script> -->
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/locales-all.min.js"></script>
 	<script src="https://apis.google.com/js/api.js"></script>
@@ -298,6 +297,15 @@
           'orderBy': 'startTime'
         }).then(function(response) {
           var events = response.result.items;
+		$.ajax({
+			url:"<?php echo base_url(); ?>",
+			type:"DELETE",
+			data:{events: events},
+			success:function(response)
+			{
+				console.log(response)
+			}
+		})
           appendPre('Upcoming events:');
 
           if (events.length > 0) {

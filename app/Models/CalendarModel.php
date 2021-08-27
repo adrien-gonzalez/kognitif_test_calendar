@@ -43,8 +43,30 @@ class CalendarModel extends Model
 
     public function deleteCalendar($param)
     {
-        $builder = $this->db->table('event');
-        $queryDelete = $builder->where('eventId', $param["id"]);
-        $queryDelete->delete();
+        if (isset($param['events'])) {
+           $localEvents = $this->select();
+
+           if(count($param['events']) > 0) {
+                for ($i = 0; $i < count($param['events']); $i++) {
+                    for ($j = 0; $j < count($localEvents); $j++) {
+                        if($param['events'][$i]['id'] != $localEvents[$j]->eventId) {
+                            $builder = $this->db->table('event');
+                            $queryDelete = $builder->where('eventId', $localEvents[$j]->eventId);
+                            $queryDelete->delete();
+                        }
+                    }
+                }
+           }   
+        } else if(isset($param['id'])) {
+           
+            $builder = $this->db->table('event');
+            $queryDelete = $builder->where('eventId', $param["id"]);
+            $queryDelete->delete();
+
+        } else {
+            $builder = $this->db->table('event');
+            $builder->emptyTable(); 
+        }
+        
     }
 }
