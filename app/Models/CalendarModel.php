@@ -28,6 +28,7 @@ class CalendarModel extends Model
             'title' => $param['title'],
             'start'   => $param['start'],
             'end' => $param['end'],
+            'eventId' =>$param['eventId']
         ]);
     }
 
@@ -36,14 +37,14 @@ class CalendarModel extends Model
         $builder = $this->db->table('event');
         $builder->set('start', $param['start']);
         $builder->set('end', $param['end']);
-        $builder->where('event.id', $param['id']);
+        $builder->where('eventId', $param['id']);
         $builder->update();
     }
 
     public function deleteCalendar($param)
     {
         $builder = $this->db->table('event');
-        $queryDelete = $builder->where('id', $param["id"]);
+        $queryDelete = $builder->where('eventId', $param["id"]);
         $queryDelete->delete();
     }
 }
